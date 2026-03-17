@@ -32,9 +32,9 @@ In your `AgentSession`, replace the cascaded configuration with a realtime model
 
 ```python
 session = AgentSession(
-    stt="deepgram/nova-3:multi",
+    stt=openai.STT(model="gpt-4o-transcribe"),
     llm="openai/gpt-4.1-mini",
-    tts="cartesia/sonic-3",
+    tts=openai.TTS(voice="coral"),
     vad=silero.VAD.load(),
 )
 ```
