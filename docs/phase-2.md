@@ -71,13 +71,11 @@ The TTS model determines what your agent sounds like. Different providers offer 
 In your `AgentSession`, the `tts` parameter controls this. Try swapping providers or voices:
 
 ```python
-# Cartesia — low latency, good for real-time
-tts="cartesia/sonic-3"
-
-# OpenAI TTS — good quality, several voice options
-tts="openai/tts-1:nova"    # warm, conversational
-tts="openai/tts-1:onyx"    # deep, authoritative
-tts="openai/tts-1:shimmer" # clear, expressive
+# OpenAI TTS voices
+tts=openai.TTS(voice="coral")    # warm, conversational
+tts=openai.TTS(voice="onyx")     # deep, authoritative
+tts=openai.TTS(voice="shimmer")  # clear, expressive
+tts=openai.TTS(voice="nova")     # friendly, versatile
 ```
 
 The voice should match the purpose. A professional property agent probably shouldn't sound like a bubbly podcast host.
