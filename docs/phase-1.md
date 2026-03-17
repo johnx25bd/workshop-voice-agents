@@ -79,9 +79,9 @@ The `AgentServer` manages connections. You define a session handler that:
 - Generates an initial greeting so the agent speaks first
 
 For the cascaded pipeline, you'll set:
-- `stt` — speech-to-text provider (e.g. `"deepgram/nova-3:multi"`)
+- `stt` — speech-to-text provider (e.g. `openai.STT(model="gpt-4o-transcribe")`)
 - `llm` — language model (e.g. `"openai/gpt-4.1-mini"`)
-- `tts` — text-to-speech provider (e.g. `"cartesia/sonic-3"` or an OpenAI voice)
+- `tts` — text-to-speech provider (e.g. `openai.TTS(voice="coral")`)
 - `vad` — voice activity detection (Silero)
 
 ### Step 4: Run the app
@@ -97,7 +97,8 @@ Using the skeleton comments in `agent.py` and the guidance above, try to fill in
 
 - The `Agent` class takes `instructions` as a keyword argument in `__init__`
 - `AgentSession` takes the model config as keyword arguments: `stt=`, `llm=`, `tts=`, `vad=`
-- Models can be specified as strings: `"deepgram/nova-3:multi"`, `"openai/gpt-4.1-mini"`
+- STT and TTS use plugin instances: `openai.STT(model="gpt-4o-transcribe")`, `openai.TTS(voice="coral")`
+- LLM can be a string: `"openai/gpt-4.1-mini"`
 - `silero.VAD.load()` gives you the VAD instance
 - `session.start()` takes `room=ctx.room` and `agent=YourAgent()`
 - `session.generate_reply()` makes the agent speak first
@@ -113,7 +114,7 @@ from dotenv import load_dotenv
 
 from livekit import agents
 from livekit.agents import AgentServer, AgentSession, Agent, room_io
-from livekit.plugins import noise_cancellation, silero
+from livekit.plugins import openai, noise_cancellation, silero
 
 load_dotenv()
 
@@ -134,9 +135,9 @@ server = AgentServer()
 @server.rtc_session(agent_name="voice-agent")
 async def session_handler(ctx: agents.JobContext):
     session = AgentSession(
-        stt="deepgram/nova-3:multi",
+        stt=openai.STT(model="gpt-4o-transcribe"),
         llm="openai/gpt-4.1-mini",
-        tts="cartesia/sonic-3",
+        tts=openai.TTS(voice="coral"),
         vad=silero.VAD.load(),
     )
 
@@ -190,9 +191,9 @@ If it's working, trace the flow:
 1. Your microphone captures audio → sent to LiveKit Cloud via WebRTC
 2. LiveKit routes the audio to your Python agent
 3. **Silero VAD** detects that you're speaking
-4. **Deepgram** transcribes your speech to text
+4. **OpenAI GPT-4o Transcribe** converts your speech to text
 5. **OpenAI GPT-4.1 mini** generates a text response
-6. **Cartesia** converts the response to speech audio
+6. **OpenAI TTS** converts the response to speech audio
 7. Audio streams back through LiveKit to your browser speakers
 
 All of this is streaming — TTS starts generating audio from the LLM's first tokens, before the full response exists. That's why the response feels fast despite going through four models.
