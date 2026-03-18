@@ -163,7 +163,11 @@ if __name__ == "__main__":
 Start the agent in development mode:
 
 ```bash
+# If you installed with uv:
 uv run python agent.py dev
+
+# If you installed with pip (venv activated):
+python agent.py dev
 ```
 
 Then open the [LiveKit Agents Playground](https://agents-playground.livekit.io) in Chrome. Connect it to your LiveKit Cloud project and click "Connect." You should be able to talk to your agent.
@@ -185,7 +189,7 @@ npm run dev
 You can also test without a browser using console mode:
 
 ```bash
-uv run python agent.py console
+uv run python agent.py console   # or just: python agent.py console
 ```
 
 This lets you type text input and hear the agent's audio response through your speakers.
