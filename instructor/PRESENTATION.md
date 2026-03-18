@@ -8,7 +8,10 @@ Ordered to match slides. Key terms in **bold**, definitions inline.
 Voice Agents / Founders and Coders / Check-in QR / Discord link
 
 ### 2. Demo
-Live demo of a voice agent. Have a short conversation prepared. After: "How natural did that feel? Why or why not?"
+Live demo of a voice agent. Have a short conversation prepared.
+- How does a neural network work?
+- Can you tell what I mean when I say "Sounds interesting"?
+After: "How natural did that feel? Why or why not?"
 
 ### 3. How did that work?
 Arrow → ? → Arrow. "What goes in the box?"
@@ -44,8 +47,10 @@ Key terms:
 Waveform (amplitude over time) alongside a spectrogram (time x frequency, energy as color).
 
 Key terms:
-- **Digital audio** - a sequence of amplitude samples at a fixed rate (16,000/sec for speech). Each sample is air pressure at that instant
-- **Spectrogram** - time x frequency representation of audio. Essentially an image. X-axis is time, y-axis is frequency, brightness is energy. Many ML models work on spectrograms because spatial patterns (formants, energy bursts) suit CNNs
+- **Digital audio** - a sequence of amplitude samples at a fixed rate (16,000/sec for speech). Each sample is air pressure at that instant. A one-dimensional sequence of values
+- **Waveform** - amplitude over time. All frequencies are mixed together in one signal. Amplitude = how loud (size of the peaks). Frequency = how fast it oscillates (tight zigzags = high pitch, wide bumps = low pitch). Real speech is many frequencies stacked on top of each other, so the raw waveform is hard to interpret by eye
+- **Fourier transform** - the math that unstacks a waveform into its component frequencies. Takes a window of samples and says "this contains X amount of 200Hz, Y amount of 500Hz, Z amount of 1000Hz..."
+- **Spectrogram** - the result of running Fourier transforms across the whole waveform. X-axis is time, y-axis is frequency, brightness is energy/intensity. Essentially an image. ML models work well on spectrograms because spatial patterns (formants, energy bursts) suit CNNs and transformers
 - **Mel spectrogram** - spectrogram with frequency axis warped to match human hearing perception
 
 ### 10. Large Language Model (LLM)
