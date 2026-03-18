@@ -1,281 +1,196 @@
-# Presentation outline
+# Presentation speaker notes
 
-## Slide deck structure
-
-~25 min lecture + 10 min discussion. Iterative structure — build the naive pipeline, then introduce problems and solutions.
-
-Slides should be visual-first: one idea per slide, big images or diagrams, minimal text.
+Ordered to match slides. Key terms in **bold**, definitions inline.
 
 ---
 
-### 0. Demo (1 min)
+### 1. Title
+Voice Agents / Founders and Coders / Check-in QR / Discord link
 
-Show the demo of a voice agent, talk to it, ask some questions, notice some things. 
-- How natural did that feel? 
-- Why?
+### 2. Demo
+Live demo of a voice agent. Have a short conversation prepared. After: "How natural did that feel? Why or why not?"
 
-### 1. The question (2 min)
+### 3. How did that work?
+Arrow → ? → Arrow. "What goes in the box?"
 
-**Slide**: Photo of a speaking mouth (left) → big empty box with "?" (center) → photo of a human ear (right)
+### 4. Motivation
+- Language makes us human. Speech is ~100,000 years old, writing ~5,000
+- Speech as an enabling technology - we evolved to listen and speak
+- Voice unlocks: more inclusive UIs, wider contexts (hands-free, eyes-free), natural interaction
 
-"You just saw the demo. You talked, it listened, it thought, it spoke back. How did that work? What goes in the box?"
+### 5. Design goals
+What do we want from a voice agent system?
+- **Natural UX** - feels like talking to a person, not a machine
+- **Quality responses** - accurate, relevant, well-reasoned
+- **Efficient, reliable, debuggable** - works in production, not just demos
 
----
+### 6. The cascaded pipeline - ?
+Arrow → [?] → Arrow. "Let's open the box."
 
-### 2. Why this matters (2 min)
+### 7. The cascaded pipeline - three components
+Arrow → [STT] → [LLM] → [TTS] → Arrow. Reveal labels one at a time. "Three models, each specialized."
 
-**Slide**: Simple visual — something evocative about voice as our primary communication medium
+### 8. Speech-to-Text (STT)
+Pipeline with STT highlighted. Waveform → MODEL → "Hello, how are you?"
 
-- We evolved to communicate through sound. Written language is recent
-- Voice interaction unlocks inclusion (not everyone reads/writes well), new contexts (hands-free, eyes-free), more natural UX
-- The motivating challenge: how do we build software that listens and speaks?
+Key terms:
+- **STT / ASR** - Speech-to-Text / Automatic Speech Recognition. Converts audio to text
+- **Transcription** - the text output of STT
+- **Streaming STT** - emits partial transcripts that refine as more audio arrives ("hel..." → "hello" → "hello, how are you")
+- **Endpointing** - deciding when the user has finished speaking. Usually a silence threshold (500-800ms). The gate between listening and responding
+- **Word Error Rate (WER)** - % of words transcribed incorrectly. Key STT quality metric
 
-Keep this brief. Set the stage, move on.
+### 9. What is a spectrogram?
+Waveform (amplitude over time) alongside a spectrogram (time x frequency, energy as color).
 
----
+Key terms:
+- **Digital audio** - a sequence of amplitude samples at a fixed rate (16,000/sec for speech). Each sample is air pressure at that instant
+- **Spectrogram** - time x frequency representation of audio. Essentially an image. X-axis is time, y-axis is frequency, brightness is energy. Many ML models work on spectrograms because spatial patterns (formants, energy bursts) suit CNNs
+- **Mel spectrogram** - spectrogram with frequency axis warped to match human hearing perception
 
-### 3. Build the pipeline (10 min)
+### 10. Large Language Model (LLM)
+Pipeline with LLM highlighted. "Hello, how are you?" → MODEL → "I'm doing well, thanks for asking!"
 
-This is the core of the talk. Start simple, add complexity by introducing problems. Each component gets its own slide — these are the key concepts people need to understand.
+Key terms:
+- **LLM** - Large Language Model. Text in, text out. Reasoning, knowledge, personality
+- **System prompt** - instructions that define agent behavior, persona, scope
+- **Tool calling / function calling** - LLM decides to invoke a function instead of generating text directly
+- **TTFT (Time to First Token)** - how quickly the LLM starts producing output. In voice, this matters more than total generation time because TTS can start as soon as the first tokens arrive
+- **Streaming LLM** - tokens output one at a time, fed to TTS incrementally
 
-#### Slide: What is digital audio?
+### 11. Text-to-Speech (TTS)
+Pipeline with TTS highlighted. "I'm doing well, thanks for asking!" → MODEL → waveform
 
-**Visual**: Waveform — a squiggly line of amplitude over time
+Key terms:
+- **TTS** - Text-to-Speech. Converts text to spoken audio
+- **Voice synthesis** - generating speech audio from text
+- **Prosody generation** - the TTS model decides intonation, stress, pacing for the generated speech
+- **Voice selection** - choosing which voice the agent uses. Different voices have different characters
+- **Voice cloning** - providing an audio sample to clone a specific voice. Uses **speaker embeddings** (a vector capturing timbre, pitch, rhythm)
+- **Streaming TTS** - starts generating audio from the first tokens, before the full text exists
+- **Mean Opinion Score (MOS)** - human judges rate naturalness 1-5. Key TTS quality metric
 
-"Before we can process speech, we need to understand what we're working with. Digital audio is just a list of numbers — amplitude samples captured thousands of times per second. 16,000 samples per second is typical for speech. Each number represents air pressure at that instant."
+### 12. Naive architecture
+Pipeline with speaking head icon. "This works. But there are problems."
 
-"A WAV file is literally just this list of numbers with a header."
+### 13. Challenge: inference is expensive
+Same pipeline, red "Inference is expensive!" banner. "We're sending everything from the microphone through expensive models. Silence, coughs, background noise."
 
-#### Slide: What is a spectrogram?
+### 14. Voice Activity Detection - pipeline
+VAD added to the pipeline (smaller box). "Inference is expensive" banner still visible. "A tiny filter at the front."
 
-**Visual**: Side by side — raw waveform (top) and its spectrogram (bottom). Speech patterns clearly visible
+### 15. Voice Activity Detection - detail
+VAD with input filtering visual (red X for noise, green check for speech).
 
-"If we convert those samples to a time × frequency representation, we get a spectrogram. It's essentially an image — time on the x-axis, frequency on the y-axis, brightness is energy. This is what many ML models actually work with. You can *see* speech patterns in it."
+Key terms:
+- **VAD** - Voice Activity Detection. Determines if audio contains human speech
+- **Silero VAD** - industry standard. Tiny CNN (<1MB), runs on CPU, faster than real-time. Looks at spectrograms
+- **CNN (Convolutional Neural Network)** - slides learned filters across input (images, spectrograms) to detect spatial patterns
+- Speech detection + noise filtering
 
-#### Slide: The naive pipeline
+### 16. Turn Detection - intro
+"How can we tell when someone is finished speaking?" Pipeline with gate/barrier between STT and LLM.
 
-**Visual**: Mouth → [STT] → [LLM] → [TTS] → Ear
+### 17. Turn Detection - question mark
+Same slide with "?" at the gate. VAD and STT both feed signals (asterisk markers) into the turn detector.
 
-"The simplest idea. Three steps. Convert speech to text. Think about it. Convert the response back to speech."
+### 18. Turn Detection - with asterisks
+Asterisks on VAD and STT showing both contribute signals. Turn Detection box appears below.
 
-#### Slide: Speech-to-Text (STT)
+Key terms:
+- **Turn detection** - deciding when it's the agent's turn to respond. Cross-cutting concern that draws from multiple signals
+- **Endpointing** - the specific decision that the user is done. Silence threshold (500-800ms) + linguistic cues
+- VAD answers "is someone talking?" Turn detection answers "are they done?" Different questions
+- **Half-duplex** - one direction at a time (cascaded agents). **Full-duplex** - both simultaneously (some S2S models like Moshi)
+- Humans use eye contact, body language, grammar, social context. Current systems mostly count silence milliseconds
 
-**Visual**: Waveform going in, text coming out. Highlight STT in the pipeline diagram
+### 19. Latency budget
+Horizontal bar: VAD ~10ms | STT ~300ms | LLM ~300ms | TTS ~150ms | Net ~75ms = ~800ms total
 
-"The first model takes audio and produces a transcript. It's analyzing spectrograms — looking for patterns that correspond to phonemes, words, sentences."
+Key terms:
+- **Latency** - time from user stops speaking to agent starts speaking
+- Natural conversation gaps average ~200ms. Over 500ms feels slow. Over 1s feels broken
+- **Streaming** - each stage feeds the next incrementally. Output-side only. The input is gated by endpointing (full transcript goes to LLM). But LLM tokens stream to TTS, and TTS audio streams to the speaker. Without streaming this would be 2-3 seconds
 
-- Listens to audio, outputs text
-- Streaming: emits partial transcripts that refine in real time ("hel..." → "hello" → "hello, how are...")
-- Key providers: Whisper (open weight, the workhorse), Deepgram (fast, commercial)
-- Measured by Word Error Rate (WER) — what percentage of words are wrong?
+### 20. Prosody - "Another thing..."
+Same text said angrily vs happily → both go through STT → identical transcript.
 
-#### Slide: Large Language Model (LLM)
+Key terms:
+- **Prosody** - patterns of stress, intonation, pace, phrasing, pauses in speech. Non-linguistic information that modifies meaning
+- Lost at the audio → text boundary in cascaded systems. TTS reinvents new prosody from scratch
+- "That's great" said sarcastically vs sincerely. Same transcript. Different meaning
 
-**Visual**: Text in, text out. Highlight LLM in the pipeline diagram
+### 21. Emotional prosody - definition
+Blue callout box. "The patterns of stress and intonation in language - tone, stress, pace, phrasing, pauses."
 
-"You know this one. Same models you use for text chat — GPT-4, Claude, Llama. Takes the transcript, generates a response."
+### 22. Speech-to-Speech pipeline - collapsing
+The three cascaded boxes (STT, LLM, TTS) merge into one. "What if one model did it all?"
 
-- Text in, text out — reasoning, knowledge, personality
-- System prompt defines behavior (just like a chatbot)
-- Can call tools / functions
-- In voice context, **time to first token (TTFT)** matters more than total generation time — because TTS can start as soon as the first tokens arrive
-- Streaming: tokens come out one at a time
+### 23. S2S with responsibilities
+Single S2S Model box with all the responsibilities listed below: speech detection, noise filtering, transcription, endpointing, streaming, world knowledge, reasoning, personality, tool calling, safety, voice synthesis, prosody, voice selection, streaming.
 
-#### Slide: Text-to-Speech (TTS)
+"One model has to do everything the cascaded pipeline spread across four specialized components."
 
-**Visual**: Text in, waveform coming out. Highlight TTS in the pipeline diagram
+### 24. Cascaded vs Speech-to-Speech
+Traffic light comparison table (green/yellow/red dots):
+- Latency: Cascaded red, S2S yellow
+- Prosody: Cascaded red, S2S green
+- Debuggability: Cascaded green, S2S red
+- Tool calling: Cascaded green, S2S yellow
+- Modularity: Cascaded green, S2S red
+- Maturity: Cascaded green, S2S yellow
 
-"The final step. Takes the LLM's text response and generates spoken audio."
+### 25. Use cases
+Slider visual showing which architecture fits:
+- Therapy/coaching → S2S
+- High-volume support → Cascaded
+- Regulated industries → Cascaded
+- Collaborative brainstorming → either, leaning S2S
+- Tool-heavy workflows → Cascaded
+- Multilingual → either, leaning S2S
 
-- Text in, audio out
-- Streaming: starts generating audio from the first few tokens, before the full response exists
-- Different voices available — each with distinct character
-- Key providers: Cartesia (low latency), ElevenLabs (high quality, voice cloning), Kokoro (open weight)
-- Measured by Mean Opinion Score (MOS) — human judges rate naturalness 1-5
-- Design question: what should the agent *sound like*? Voice selection matters
+### 26. Landscape
+Provider grid:
+- **STT**: Whisper, Deepgram, AssemblyAI
+- **LLM**: OpenAI, Anthropic, Meta, Google
+- **TTS**: Cartesia, ElevenLabs, Kokoro, OpenAI
+- **S2S**: OpenAI Realtime, Gemini Live, Moshi, Ultravox
+- **Framework**: LiveKit Agents, Pipecat, Vocode
+- **Telephony**: Twilio, LiveKit SIP
 
-"This pipeline works. You heard it in the demo. But there are problems."
+### 27. LiveKit
+- Open-source WebRTC infrastructure
+- Handles real-time audio/video between participants
+- Handles the "plumbing" for voice agent systems
 
-#### Problem: wasted compute
+Key terms:
+- **WebRTC** - Web Real-Time Communication. Browser-native protocol for real-time audio/video. Same tech as Google Meet, Discord
+- **SFU (Selective Forwarding Unit)** - server that receives audio streams and forwards them to other participants. Audio goes through the server, not peer-to-peer
 
-**Visual**: Same pipeline diagram, but the arrow from Mouth is labeled "silence... cough... background noise... someone else talking... actual speech (finally)"
+### 28. LiveKit Architecture
+Client ↔ LiveKit Cloud ↔ Agent
+- Client: mic/speakers, WebRTC, browser/app
+- LiveKit Cloud: audio routing, "room" management, LK or self-hosted
+- Agent: Python process, runs inference, hosted wherever
 
-"We're running expensive inference on every millisecond of audio coming from the microphone. Most of it isn't even speech."
+Audio path: browser → LiveKit Cloud → agent → OpenAI (STT) → agent → OpenAI (LLM) → agent → OpenAI (TTS) → agent → LiveKit Cloud → browser
 
-#### Slide: Voice Activity Detection (VAD)
-
-**Visual**: Mouth → **[VAD]** → [STT] → [LLM] → [TTS] → Ear. VAD highlighted as new addition
-
-"Solution: a tiny, cheap filter at the front. One job: 'Is someone talking right now?' If yes, pass the audio through. If no, throw it away."
-
-- Detects whether audio contains human speech
-- Silero VAD is the industry standard: a small CNN (< 1MB), runs on CPU, processes audio faster than real-time
-- It works on spectrograms — since a spectrogram is like an image, a convolutional neural network slides learned filters across it, detecting patterns that look like human speech vs noise
-- Output: a probability between 0 and 1. Above a threshold → speech detected
-- Costs almost nothing. Runs continuously. This is why it goes first
-
-#### Problem: when is the user done?
-
-**Visual**: Transcript appearing word by word... "I want to book a flight to..." [long pause — 600ms] "...Paris"
-
-"When do we send the transcript to the LLM? How do we know the user has finished their thought?"
-
-#### Slide: Endpointing
-
-**Visual**: Same pipeline, highlight the boundary between STT and LLM. A "gate" icon or barrier
-
-"Endpointing: the decision that the user is done talking. This is the gate between listening and responding."
-
-- Usually a silence duration threshold — 500-800ms of quiet after speech
-- Sometimes supplemented with linguistic cues (did the sentence end grammatically?)
-- The fundamental tradeoff: too short → you cut people off mid-thought. Too long → the agent feels sluggish
-- This is genuinely hard. Humans use eye contact, body language, grammar, social context, shared knowledge. Current systems mostly count milliseconds of silence
-
-#### Problem: latency
-
-**Visual**: Horizontal waterfall / bar chart showing where time goes:
-
+### 29. LiveKit Agents Framework
+Code snippet showing AgentSession config:
 ```
-VAD (~10ms) | STT (~300ms) | LLM TTFT (~300ms) | TTS (~150ms) | Network (~75ms)
-                                                          Total: ~800ms
+AgentSession(
+    stt=openai.STT(model="gpt-4o-transcribe"),
+    llm="openai/gpt-4.1-mini",
+    tts=openai.TTS(voice="coral"),
+    vad=silero.VAD.load()
+)
 ```
+"You configure which model goes in each slot. LiveKit handles the streaming, audio routing, WebRTC. You just pick your components."
 
-"Every step adds time. Research shows natural turn gaps in conversation average ~200ms. We're at 800ms if we're lucky. Over 1 second and it feels broken."
-
-"But here's the key insight: this is a **streaming** pipeline. TTS starts generating audio from the LLM's first tokens, before the full response exists. Each stage feeds into the next in real time. Without streaming, this would be 2-3 seconds. Streaming is what makes this usable."
-
-#### Problem: what gets lost?
-
-**Visual**: Two audio waveforms that look different but produce the same transcript. Or: the text "That's great" with two arrows pointing to it — one from a happy face, one from an angry face
-
-"Try it: say 'That's great' sarcastically. Now say it sincerely. Transcribe both — identical text. But the meaning is completely different."
-
-"This is **prosody** — stress, intonation, pacing, emphasis. When we convert audio to text, we throw all of this away. When TTS converts text back to audio, it invents new prosody from scratch. The emotional signal that was in the user's voice is gone."
-
-#### Slide: The full cascaded pipeline
-
-**Visual**: Complete pipeline diagram with responsibilities listed under each component:
-
-```
-[VAD]              [STT]               [LLM]                  [TTS]
-- Speech detection - Transcription     - World knowledge      - Voice synthesis
-- Noise filtering  - Endpointing       - Reasoning            - Prosody generation
-                   - Streaming         - Personality/persona   - Voice selection
-                                       - Tool calling          - Streaming
-                                       - Safety & alignment
-```
-
-"Each component is specialized. This is powerful — you can use the best model for each job, swap them independently, inspect the text at every boundary, filter content, log everything. But the boundaries are lossy. And every boundary adds latency."
-
-"This is the architecture you'll build first in the tutorial."
-
----
-
-### 4. What if one model did it all? (5 min)
-
-**Slide**: Same mouth/ear diagram, but the middle is ONE box labeled "Speech-to-Speech Model"
-
-"What if we removed the text stage entirely? Audio in, audio out. One model."
-
-**Slide**: The responsibilities list — everything that model has to encode:
-
-- World knowledge (like a text LLM)
-- Speech understanding (like STT)
-- Speech generation (like TTS)
-- Voice activity detection
-- Turn-taking and interruption
-- Emotional prosody — interpretation AND generation
-
-"This is why these models are enormous and hard to build. They're doing everything at once."
-
-**Slide**: Side-by-side comparison
-
-| | Cascaded | Speech-to-speech |
-|---|---|---|
-| Latency | Higher (multiple steps) | Lower (one step) |
-| Prosody | Lost at text boundary | Preserved end-to-end |
-| Debuggability | High (inspect text) | Low (black box) |
-| Tool calling | Natural (text-based) | Tricky (no text stage) |
-| Modularity | Swap any component | All or nothing |
-| Maturity | Production-proven | Frontier |
-
-**Slide**: Mental model
-
-"**Cascaded = Unix philosophy.** Small tools, piped together. Lossy at the seams, but modular and debuggable."
-
-"**Speech-to-speech = one model that natively speaks.** Preserves everything, but you give up control."
-
-**Slide**: The choosing-an-architecture table (from NOTES.md). Quick — spend 30 seconds, don't read every row.
-
----
-
-### 5. The landscape (3 min)
-
-**Slide**: A grid or logo cloud of the key players. Don't explain each — just name and category.
-
-| Role | Options |
-|---|---|
-| STT | Whisper (open), Deepgram, AssemblyAI |
-| LLM | GPT-4o, Claude, Llama, Gemini |
-| TTS | Cartesia, ElevenLabs, Kokoro (open), OpenAI TTS |
-| S2S | OpenAI Realtime, Gemini Live, Moshi (open), Ultravox (open) |
-| Orchestration | LiveKit Agents, Pipecat, Vocode |
-| Telephony | Twilio, LiveKit SIP |
-
-"Open weight options exist for every component. This matters for cost, privacy, and customization."
-
----
-
-### 6. What we're building (3 min)
-
-**Slide**: LiveKit architecture diagram — browser ↔ LiveKit Cloud ↔ your agent
-
-"LiveKit handles the real-time audio connection. Your agent is a Python process that joins a 'room' — like joining a video call. LiveKit routes audio between you and the user."
-
-**Slide**: The phases
-
-1. Build a basic cascaded voice agent
-2. Give it a persona and pick a voice
-3. Add tool calling — make it do things
-4. Swap to a realtime model — feel the difference
-5. (Stretch) Connect it to a phone number
-
-"You'll experience both architectures firsthand. By the end, you'll have a felt sense of the tradeoffs, not just a theoretical understanding."
-
-**Slide**: Setup instructions — repo URL, setup commands. Keep this on screen while people clone and install.
-
----
-
-### 7. Discussion (10 min)
-
-**Slide**: "How would you evaluate a voice agent?"
-
-Open question — let the room generate ideas before showing any framework. They'll come up with good stuff: latency, accuracy, naturalness, task completion. Then you can add dimensions they missed.
-
-Follow-up discussion prompts:
-- "If you were building a voice agent for [specific use case], which architecture would you pick? Why?"
-- "What's the hardest problem to solve here?"
-- Open Q&A
-
----
-
-## Slide design notes
-
-- **Visual-first**: every slide should have an image, diagram, or visualization as the primary element. Text supports the visual, not the other way around
-- **One idea per slide**: if you're making two points, that's two slides
-- **Build-up diagrams**: the pipeline should animate/build — don't show the whole thing at once. Add components one at a time
-- **Spectrogram image**: find or generate a clear spectrogram showing visible speech patterns
-- **Waveform comparison**: for the prosody slide, two waveforms of the same sentence said differently would be powerful
-- **Dark background**: easier on the eyes in a projector setting, and diagrams/images pop more
-
-## Assets needed
-
-- [ ] Photo: speaking mouth (or stylized graphic)
-- [ ] Photo: human ear (or stylized graphic)
-- [ ] Spectrogram image showing speech
-- [ ] Audio waveform comparison (same text, different prosody)
-- [ ] LiveKit architecture diagram (browser ↔ cloud ↔ agent)
-- [ ] Pipeline diagrams (v1, v2, v3, full cascaded, S2S)
-- [ ] Provider logos or grid
-- [ ] (v2) Animated pipeline build-up
-- [ ] (v3) Manim visualizations of audio → spectrogram, streaming pipeline, latency waterfall
+### 30. Build
+Repo URL, phase timing, QR codes, Discord link.
+- Setup + Phase 1: ~45min
+- Phase 2: ~30min
+- Check-in
+- Phase 3/4: Choose your own adventure
+- Q+A: 15min
