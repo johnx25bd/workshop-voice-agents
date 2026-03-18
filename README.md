@@ -27,6 +27,8 @@ git clone https://github.com/johnx25bd/workshop-voice-agents.git
 cd workshop-voice-agents
 ```
 
+Install dependencies. You can review what's being installed in [`pyproject.toml`](pyproject.toml) - it's the [LiveKit Agents](https://github.com/livekit/agents) framework with plugins for VAD and noise cancellation, plus `python-dotenv` for environment variable loading.
+
 With [uv](https://docs.astral.sh/uv/) (recommended):
 ```bash
 uv sync
