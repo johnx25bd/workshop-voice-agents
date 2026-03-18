@@ -49,7 +49,10 @@ You should have `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, and `OPE
 - **Import error with `python`**: if you installed with `uv`, use `uv run python` instead of `python` - uv manages its own virtual environment
 - **Import error with `uv run`**: run `uv sync` again
 - **If you used pip**: make sure you activated the venv first (`source .venv/bin/activate`)
-- **Missing API keys**: check `.env.example` for the required variables
+- **Missing API keys**: check `.env.example` for the required variables:
+  - `LIVEKIT_URL=wss://your-project.livekit.cloud`
+  - `LIVEKIT_API_KEY=your-api-key`
+  - `LIVEKIT_API_SECRET=your-api-secret`
 
 </details>
 
@@ -170,29 +173,50 @@ uv run python agent.py dev
 python agent.py dev
 ```
 
-Then open the [LiveKit Agents Playground](https://agents-playground.livekit.io) in Chrome. Connect it to your LiveKit Cloud project and click "Connect." You should be able to talk to your agent.
-
-<details>
-<summary>Go deeper: Build your own frontend</summary>
-
-The playground is convenient for development, but if you want a standalone frontend you can customize, clone the React starter:
+Now set up the frontend. In a separate terminal, clone and run LiveKit's React starter app:
 
 ```bash
 git clone https://github.com/livekit-examples/agent-starter-react.git
 cd agent-starter-react
-npm install
-npm run dev
+pnpm install   # or npm install
 ```
+
+Create a `.env` file in the React app with your LiveKit credentials and agent name:
+
+```
+LIVEKIT_URL=wss://your-project.livekit.cloud
+LIVEKIT_API_KEY=your-api-key
+LIVEKIT_API_SECRET=your-api-secret
+AGENT_NAME=voice-agent
+```
+
+The `AGENT_NAME` must match the name in your agent's `@server.rtc_session(agent_name="voice-agent")` decorator.
+
+Start the frontend:
+
+```bash
+pnpm dev   # or npm run dev
+```
+
+Open it in Chrome and click "Start Call." You should be talking to your agent.
+
+<details>
+<summary>Alternative: LiveKit Agents Playground</summary>
+
+If you don't want to run the frontend locally, LiveKit provides a hosted [Agents Playground](https://agents-playground.livekit.io) you can connect to your Cloud project. It requires logging in with your LiveKit Cloud account.
 
 </details>
 
-You can also test without a browser using console mode:
+<details>
+<summary>Alternative: Console mode</summary>
+
+You can also test without a browser using console mode, which uses your laptop's microphone and speakers directly:
 
 ```bash
 uv run python agent.py console   # or just: python agent.py console
 ```
 
-This lets you type text input and hear the agent's audio response through your speakers.
+</details>
 
 ## What just happened?
 
