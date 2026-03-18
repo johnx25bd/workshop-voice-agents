@@ -40,10 +40,14 @@ python -m venv .venv && source .venv/bin/activate  # Windows: .venv\Scripts\acti
 pip install -r requirements.txt
 ```
 
-Copy the environment template and fill in your API keys:
+Copy the environment template:
 ```bash
 cp .env.example .env
 ```
+
+Then fill in your API keys in `.env`:
+- **OpenAI API key** - check the workshop Discord channel for a shared key
+- **LiveKit credentials** (`LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`) - sign up for a free account at [cloud.livekit.io](https://cloud.livekit.io), create a project, and find your keys in the project settings
 
 ## Tutorial
 
