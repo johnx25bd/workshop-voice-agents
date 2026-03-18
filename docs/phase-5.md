@@ -66,7 +66,7 @@ This uses telephony-optimized noise cancellation when the caller is connecting v
 
 ## Test it
 
-1. Start your agent: `python agent.py dev`
+1. Start your agent: `uv run python agent.py dev`
 2. Call your Twilio phone number
 3. Talk to your agent  - over the phone
 

@@ -139,7 +139,7 @@ Be mindful of latency  - the user is waiting in silence while your tool runs. Ex
 ## Test it
 
 1. Add your tool(s) to your agent class
-2. Run `python agent.py dev`
+2. Run `uv run python agent.py dev`
 3. Have a conversation that would naturally trigger the tool
 4. Watch the console output  - you'll see when the LLM decides to call your tool
 

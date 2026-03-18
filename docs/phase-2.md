@@ -118,7 +118,7 @@ Experiment with your instructions to control:
 2. Load your system prompt with the context that agent would need
 3. Pick a voice that fits
 4. Customize the greeting
-5. Run `python agent.py dev` and try to break it  - ask questions it should handle, and questions it shouldn't
+5. Run `uv run python agent.py dev` and try to break it  - ask questions it should handle, and questions it shouldn't
 
 ## Checkpoint
 

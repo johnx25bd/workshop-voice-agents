@@ -62,7 +62,7 @@ The learning here isn't in the code change  - it's in *experiencing* the archite
 
 ### Talk to both versions
 
-1. **Run your cascaded agent** (`python agent.py dev`). Have a conversation for a few minutes. Pay attention to how it feels
+1. **Run your cascaded agent** (`uv run python agent.py dev`). Have a conversation for a few minutes. Pay attention to how it feels
 2. **Swap to the realtime model** and restart. Have the same conversation. Pay attention again
 
 ### What to notice

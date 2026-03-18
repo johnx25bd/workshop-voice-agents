@@ -34,8 +34,8 @@ Before writing code, make sure your environment is ready:
 # Verify Python version (need 3.9+)
 python --version
 
-# Verify dependencies are installed
-python -c "import livekit.agents; print('livekit-agents installed')"
+# Verify dependencies are installed (use uv run if you installed with uv)
+uv run python -c "import livekit.agents; print('livekit-agents installed')"
 
 # Verify your .env file has the required keys
 cat .env
@@ -46,8 +46,9 @@ You should have `LIVEKIT_URL`, `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, and `OPE
 <details>
 <summary>Troubleshooting setup</summary>
 
-- **Python not found**: make sure you activated your virtual environment (`source .venv/bin/activate`)
-- **Import error**: run `uv sync` or `pip install -r requirements.txt` again
+- **Import error with `python`**: if you installed with `uv`, use `uv run python` instead of `python` - uv manages its own virtual environment
+- **Import error with `uv run`**: run `uv sync` again
+- **If you used pip**: make sure you activated the venv first (`source .venv/bin/activate`)
 - **Missing API keys**: check `.env.example` for the required variables
 
 </details>
@@ -162,7 +163,7 @@ if __name__ == "__main__":
 Start the agent in development mode:
 
 ```bash
-python agent.py dev
+uv run python agent.py dev
 ```
 
 Then open the [LiveKit Agents Playground](https://agents-playground.livekit.io) in Chrome. Connect it to your LiveKit Cloud project and click "Connect." You should be able to talk to your agent.
@@ -184,7 +185,7 @@ npm run dev
 You can also test without a browser using console mode:
 
 ```bash
-python agent.py console
+uv run python agent.py console
 ```
 
 This lets you type text input and hear the agent's audio response through your speakers.
