@@ -1,34 +1,27 @@
-# Phase 4: Realtime models
+# Phase 4: Speech-to-speech models
 
-You've built a cascaded pipeline  - separate models for STT, LLM, and TTS, piped together. Now you'll swap to a **speech-to-speech** model that handles everything in one step, and compare the experience.
+So far you've been running a cascaded pipeline where separate models handle STT, LLM, and TTS. Now you'll swap that out for a single speech-to-speech model and see how it feels different.
 
-## What's different?
+## The difference
 
-In the cascaded pipeline:
+Cascaded:
 ```
 Audio → [STT] → Text → [LLM] → Text → [TTS] → Audio
 ```
 
-With a realtime model:
+Speech-to-speech:
 ```
 Audio → [Single Model] → Audio
 ```
 
-One model does it all. No transcription step, no text-to-speech step. Audio in, audio out.
-
-This means:
-- **Lower latency**  - two inference steps eliminated
-- **Prosody preservation**  - tone, emotion, and emphasis carry through end-to-end
-- **Less control**  - no text to inspect, filter, or log mid-pipeline
+One model, no text intermediate. Audio goes in, audio comes out. That means lower latency (two inference steps gone), better prosody preservation (no lossy text bottleneck), but less visibility into what's happening (no text to inspect or log).
 
 ## Make the swap
 
-The code change is small. That's the point of LiveKit's abstraction  - the framework handles the plumbing, you just swap the model.
-
-In your `AgentSession`, replace the cascaded configuration with a realtime model:
+Replace your `AgentSession` configuration:
 
 <details>
-<summary>Before (cascaded)</summary>
+<summary>Cascaded (what you have now)</summary>
 
 ```python
 session = AgentSession(
@@ -42,7 +35,7 @@ session = AgentSession(
 </details>
 
 <details>
-<summary>After (realtime)</summary>
+<summary>Speech-to-speech</summary>
 
 ```python
 from livekit.plugins import openai
@@ -52,52 +45,31 @@ session = AgentSession(
 )
 ```
 
-That's it. No `stt`, no `tts`, no `vad`  - the realtime model handles all of those internally.
+No `stt`, no `tts`, no `vad`. The realtime model handles all of that internally.
 
 </details>
 
-## The exercise: compare
+Restart your agent and connect from the frontend.
 
-The learning here isn't in the code change  - it's in *experiencing* the architectural difference you learned about in the lecture. The swap takes two minutes. The comparison is the real work.
+## Compare them
 
-### Talk to both versions
+Swap back and forth. Have the same conversation with both versions. Pay attention to:
 
-1. **Run your cascaded agent** (`uv run python agent.py dev`). Have a conversation for a few minutes. Pay attention to how it feels
-2. **Swap to the realtime model** and restart. Have the same conversation. Pay attention again
+- **Latency** - which responds faster?
+- **Naturalness** - rhythm, intonation, pacing. Which sounds more human?
+- **Prosody** - say something sarcastic, or excited, or frustrated. Does the speech-to-speech version pick up on your tone? Does the cascaded version?
+- **Interruptions** - talk over the agent mid-sentence. What happens with each?
+- **Tool calling** - if you added tools in phase 3, do they still work? The realtime model handles function calls differently (it emits them alongside audio rather than in a text stream)
+- **Accuracy** - are the answers better or worse without a text stage?
 
-### What to notice
+## Available voices
 
-As you go back and forth, consider:
+OpenAI's realtime model voices: `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`. Try a few. They have noticeably different characters.
 
-- **Latency**  - which responds faster? Is the difference noticeable?
-- **Naturalness**  - which sounds more like talking to a person? Is there a difference in rhythm, intonation, pacing?
-- **Prosody**  - try saying something with strong emotion (frustration, excitement, sarcasm). Does the agent's response reflect your tone in the realtime version? What about cascaded?
-- **Interruption handling**  - try talking over the agent mid-sentence. How does each version handle it?
-- **Accuracy**  - does one give better or worse answers? Does removing the text stage affect response quality?
-
-### Try your tools
-
-If you added tool calling in phase 3, try triggering it with the realtime model. What happens? Does it still work? The realtime model handles function calls by emitting them alongside audio  - LiveKit Agents manages this for you, but the experience may differ.
-
-### Write down three observations
-
-Seriously  - write them down. These observations are the experiential version of the architectural tradeoffs from the lecture. You now have a felt sense of what "prosody loss at the text boundary" and "latency reduction from eliminating inference steps" actually mean in practice.
-
-## Available realtime models
-
-LiveKit supports several realtime model providers:
-
-| Model | Provider | Notes |
-|---|---|---|
-| `openai.realtime.RealtimeModel` | OpenAI | Most mature, multiple voice options |
-| `google.realtime.RealtimeModel` | Google (Gemini) | Gemini Live, multimodal |
-
-Voice options for OpenAI's realtime model include: `alloy`, `ash`, `ballad`, `coral`, `echo`, `sage`, `shimmer`, `verse`. Try a few  - they have noticeably different personalities.
+LiveKit also supports Google's Gemini realtime model via `google.realtime.RealtimeModel`.
 
 ## Checkpoint
 
-You've now experienced both voice agent architectures firsthand. You should have a clear sense of the tradeoffs  - not just theoretically, but from feeling the difference.
+You've now used both architectures. Think about the agent you built in phase 2. Which architecture fits that use case better? Why?
 
-Think about: for the persona you built in phase 2, which architecture is a better fit? Why?
-
-If you're done, you can move on to the stretch goal: **[Phase 5: Telephony](phase-5.md)**.
+If you want to keep going: **[Phase 5: Telephony](phase-5.md)**.
