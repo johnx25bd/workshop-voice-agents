@@ -1,6 +1,6 @@
 # Phase 1: Build a voice agent
 
-By the end of this phase, you'll have a working voice agent running in your browser — you talk, it listens, thinks, and speaks back.
+By the end of this phase, you'll have a working voice agent running in your browser  - you talk, it listens, thinks, and speaks back.
 
 ## What we're building
 
@@ -10,10 +10,10 @@ A **cascaded pipeline** voice agent. Audio flows through separate, specialized m
 Your voice → [VAD] → [STT] → [LLM] → [TTS] → Agent speaks
 ```
 
-- **VAD** (Voice Activity Detection) — detects when you're speaking
-- **STT** (Speech-to-Text) — transcribes your speech to text
-- **LLM** (Large Language Model) — generates a response
-- **TTS** (Text-to-Speech) — converts the response to spoken audio
+- **VAD** (Voice Activity Detection)  - detects when you're speaking
+- **STT** (Speech-to-Text)  - transcribes your speech to text
+- **LLM** (Large Language Model)  - generates a response
+- **TTS** (Text-to-Speech)  - converts the response to spoken audio
 
 LiveKit Agents orchestrates this pipeline for you and handles the WebRTC audio connection between your browser and the agent.
 
@@ -21,10 +21,10 @@ LiveKit Agents orchestrates this pipeline for you and handles the WebRTC audio c
 
 Two things are running:
 
-1. **LiveKit Cloud** — handles the real-time audio connection (WebRTC). Think of it as the "phone line" between your browser and your agent
-2. **Your agent** (Python, running locally) — connects to LiveKit Cloud, receives audio, runs the pipeline, sends audio back
+1. **LiveKit Cloud**  - handles the real-time audio connection (WebRTC). Think of it as the "phone line" between your browser and your agent
+2. **Your agent** (Python, running locally)  - connects to LiveKit Cloud, receives audio, runs the pipeline, sends audio back
 
-The browser connects to LiveKit Cloud, and your agent connects to LiveKit Cloud. LiveKit routes audio between them. You don't need to build a frontend — LiveKit provides the [Agents Playground](https://agents-playground.livekit.io) as a browser UI.
+The browser connects to LiveKit Cloud, and your agent connects to LiveKit Cloud. LiveKit routes audio between them. You don't need to build a frontend  - LiveKit provides the [Agents Playground](https://agents-playground.livekit.io) as a browser UI.
 
 ## Setup check
 
@@ -60,15 +60,15 @@ Open `agent.py`. You'll see a skeleton with comments describing what to build. H
 
 You need the LiveKit agents framework and some plugins. The key pieces are:
 
-- `Agent` — base class for your agent's behavior and instructions
-- `AgentServer` — the server that manages connections to LiveKit
-- `AgentSession` — configures the pipeline (which STT, LLM, TTS to use)
-- `silero` — the VAD plugin (detects when you're speaking)
-- `noise_cancellation` — cleans up audio input
+- `Agent`  - base class for your agent's behavior and instructions
+- `AgentServer`  - the server that manages connections to LiveKit
+- `AgentSession`  - configures the pipeline (which STT, LLM, TTS to use)
+- `silero`  - the VAD plugin (detects when you're speaking)
+- `noise_cancellation`  - cleans up audio input
 
 ### Step 2: Define your agent
 
-Create a class that inherits from `Agent`. The most important thing here is the `instructions` parameter — this is the system prompt that tells the LLM how to behave. Keep responses concise and avoid formatting (no markdown, no emoji) — this is voice, not text.
+Create a class that inherits from `Agent`. The most important thing here is the `instructions` parameter  - this is the system prompt that tells the LLM how to behave. Keep responses concise and avoid formatting (no markdown, no emoji)  - this is voice, not text.
 
 ### Step 3: Create the server and session
 
@@ -79,10 +79,10 @@ The `AgentServer` manages connections. You define a session handler that:
 - Generates an initial greeting so the agent speaks first
 
 For the cascaded pipeline, you'll set:
-- `stt` — speech-to-text provider (e.g. `openai.STT(model="gpt-4o-transcribe")`)
-- `llm` — language model (e.g. `"openai/gpt-4.1-mini"`)
-- `tts` — text-to-speech provider (e.g. `openai.TTS(voice="coral")`)
-- `vad` — voice activity detection (Silero)
+- `stt`  - speech-to-text provider (e.g. `openai.STT(model="gpt-4o-transcribe")`)
+- `llm`  - language model (e.g. `"openai/gpt-4.1-mini"`)
+- `tts`  - text-to-speech provider (e.g. `openai.TTS(voice="coral")`)
+- `vad`  - voice activity detection (Silero)
 
 ### Step 4: Run the app
 
@@ -124,7 +124,7 @@ class Assistant(Agent):
         super().__init__(
             instructions="""You are a helpful voice AI assistant.
             You provide clear, concise answers to questions.
-            Keep your responses short and conversational — this is a voice interaction,
+            Keep your responses short and conversational  - this is a voice interaction,
             not a text chat. Avoid any formatting, symbols, or emoji.""",
         )
 
@@ -201,7 +201,7 @@ If it's working, trace the flow:
 6. **OpenAI TTS** converts the response to speech audio
 7. Audio streams back through LiveKit to your browser speakers
 
-All of this is streaming — TTS starts generating audio from the LLM's first tokens, before the full response exists. That's why the response feels fast despite going through four models.
+All of this is streaming  - TTS starts generating audio from the LLM's first tokens, before the full response exists. That's why the response feels fast despite going through four models.
 
 ## Checkpoint
 
@@ -212,9 +212,9 @@ When you're ready, move on to **[Phase 2: Make it yours](phase-2.md)**.
 <details>
 <summary>Go deeper: How does LiveKit connect everything?</summary>
 
-LiveKit uses **WebRTC** (Web Real-Time Communication) — a browser-native protocol for real-time audio/video. The same tech powers Google Meet and Discord.
+LiveKit uses **WebRTC** (Web Real-Time Communication)  - a browser-native protocol for real-time audio/video. The same tech powers Google Meet and Discord.
 
-When your agent calls `session.start(room=ctx.room)`, it joins a LiveKit **room** as a participant — just like a human joining a video call. Your browser is another participant in the same room. LiveKit handles the audio routing, encoding, network transport, and echo cancellation.
+When your agent calls `session.start(room=ctx.room)`, it joins a LiveKit **room** as a participant  - just like a human joining a video call. Your browser is another participant in the same room. LiveKit handles the audio routing, encoding, network transport, and echo cancellation.
 
 The `AgentServer` listens for new room sessions. When a browser connects to your LiveKit project, the server spins up your session handler, which creates the agent and joins the room. The `@server.rtc_session` decorator is what ties your handler function to incoming connections.
 

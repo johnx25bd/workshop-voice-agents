@@ -2,7 +2,7 @@
 
 Your agent lives in the browser. In this phase, you'll connect it to a phone number so anyone can call it.
 
-This is a stretch goal — it requires a Twilio account and some additional setup. If you don't get to it during the workshop, the instructions here are self-contained enough to try later.
+This is a stretch goal  - it requires a Twilio account and some additional setup. If you don't get to it during the workshop, the instructions here are self-contained enough to try later.
 
 ## How it works
 
@@ -11,7 +11,7 @@ LiveKit supports SIP (Session Initiation Protocol), the standard protocol for in
 1. Someone dials a phone number
 2. **Twilio** receives the call and forwards it to LiveKit via SIP
 3. **LiveKit** creates a room and routes the audio to your agent
-4. Your agent handles the call exactly as it handles a browser session — same code, same pipeline
+4. Your agent handles the call exactly as it handles a browser session  - same code, same pipeline
 
 Your agent code barely changes. The main work is configuring the Twilio → LiveKit connection.
 
@@ -68,20 +68,20 @@ This uses telephony-optimized noise cancellation when the caller is connecting v
 
 1. Start your agent: `python agent.py dev`
 2. Call your Twilio phone number
-3. Talk to your agent — over the phone
+3. Talk to your agent  - over the phone
 
 The same agent handles both browser and phone calls. The difference is just the audio transport layer.
 
 <details>
 <summary>Go deeper: SIP and telephony concepts</summary>
 
-**SIP** (Session Initiation Protocol) is the standard protocol for establishing voice calls over the internet. It handles call setup, teardown, and routing — but not the actual audio. The audio travels over **RTP** (Real-time Transport Protocol).
+**SIP** (Session Initiation Protocol) is the standard protocol for establishing voice calls over the internet. It handles call setup, teardown, and routing  - but not the actual audio. The audio travels over **RTP** (Real-time Transport Protocol).
 
-**Twilio** acts as a bridge between the traditional phone network (PSTN) and SIP. When someone dials a phone number, Twilio receives the call from the phone network and can forward it to any SIP endpoint — in this case, LiveKit.
+**Twilio** acts as a bridge between the traditional phone network (PSTN) and SIP. When someone dials a phone number, Twilio receives the call from the phone network and can forward it to any SIP endpoint  - in this case, LiveKit.
 
 **LiveKit SIP** is LiveKit's native SIP gateway. It receives incoming SIP calls and creates a room for each one, making the caller a participant just like a browser user. Your agent joins the same room and the conversation works identically.
 
-This is what makes the voice agent code portable — the agent doesn't know or care whether the user is in a browser or on a phone. LiveKit abstracts the transport.
+This is what makes the voice agent code portable  - the agent doesn't know or care whether the user is in a browser or on a phone. LiveKit abstracts the transport.
 
 </details>
 

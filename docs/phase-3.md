@@ -1,6 +1,6 @@
 # Phase 3: Add tool calling
 
-Your agent can talk, but it can't *do* anything. In this phase, you'll give it the ability to call functions — tools that let it take actions or look up information.
+Your agent can talk, but it can't *do* anything. In this phase, you'll give it the ability to call functions  - tools that let it take actions or look up information.
 
 ## How tool calling works in a cascaded pipeline
 
@@ -43,7 +43,7 @@ class Assistant(Agent):
 
 Key details:
 - The `@function_tool` decorator registers the method as a callable tool
-- The **docstring** is what the LLM sees — write it clearly so the model knows when to use this tool
+- The **docstring** is what the LLM sees  - write it clearly so the model knows when to use this tool
 - **Type hints** on the parameters tell the LLM what arguments to provide
 - The return value is passed back to the LLM as context for its response
 - `RunContext` provides access to session state if you need it
@@ -52,12 +52,12 @@ Key details:
 
 Add one or more tools to your agent. Some ideas depending on your persona:
 
-- **A lookup tool** — search a dictionary, get a fact, check a price
-- **A calculation tool** — convert units, calculate a tip, estimate cooking time
-- **A state tool** — remember something the user said, keep a list, track a count
-- **A creative tool** — roll dice, draw a tarot card, generate a random recipe suggestion
+- **A lookup tool**  - search a dictionary, get a fact, check a price
+- **A calculation tool**  - convert units, calculate a tip, estimate cooking time
+- **A state tool**  - remember something the user said, keep a list, track a count
+- **A creative tool**  - roll dice, draw a tarot card, generate a random recipe suggestion
 
-Try to build at least one tool that fits your agent's persona. The tool doesn't need to call a real external API — returning a hardcoded or computed string is fine for learning.
+Try to build at least one tool that fits your agent's persona. The tool doesn't need to call a real external API  - returning a hardcoded or computed string is fine for learning.
 
 <details>
 <summary>Hints</summary>
@@ -66,7 +66,7 @@ Try to build at least one tool that fits your agent's persona. The tool doesn't 
 - The tool method must be `async` and on your `Agent` class
 - The first two params are always `self` and `context: RunContext`
 - Additional params are the tool's arguments (with type hints)
-- Return a string — this is what the LLM sees as the tool result
+- Return a string  - this is what the LLM sees as the tool result
 
 </details>
 
@@ -96,7 +96,7 @@ class Assistant(Agent):
         cases = {
             "martinez": "Sofia Martinez. Last seen near the docks, Tuesday night. Known associate of Big Eddie.",
             "chen": "Robert Chen. Filed a missing persons report for his business partner. Story doesn't add up.",
-            "johnson": "Deceased. Found in the warehouse district. Case closed — officially.",
+            "johnson": "Deceased. Found in the warehouse district. Case closed  - officially.",
         }
         result = cases.get(name.lower())
         if result:
@@ -119,7 +119,7 @@ class Assistant(Agent):
 <details>
 <summary>Go deeper: Tool calling with external APIs</summary>
 
-For a real agent, you'd call external services from your tools. The pattern is the same — just add async HTTP calls:
+For a real agent, you'd call external services from your tools. The pattern is the same  - just add async HTTP calls:
 
 ```python
 import httpx
@@ -132,7 +132,7 @@ async def get_weather(self, context: RunContext, city: str) -> str:
         return resp.text
 ```
 
-Be mindful of latency — the user is waiting in silence while your tool runs. External API calls should be fast (under 1-2 seconds) or you should have the agent say something like "let me check on that" first.
+Be mindful of latency  - the user is waiting in silence while your tool runs. External API calls should be fast (under 1-2 seconds) or you should have the agent say something like "let me check on that" first.
 
 </details>
 
@@ -141,14 +141,14 @@ Be mindful of latency — the user is waiting in silence while your tool runs. E
 1. Add your tool(s) to your agent class
 2. Run `python agent.py dev`
 3. Have a conversation that would naturally trigger the tool
-4. Watch the console output — you'll see when the LLM decides to call your tool
+4. Watch the console output  - you'll see when the LLM decides to call your tool
 
 Does the LLM use the tool when you expect? Does it pass reasonable arguments? You may need to refine your docstring to guide the model.
 
 ## Checkpoint
 
-Your agent can now take actions — it's not just a voice chatbot, it's an agent that can do things. This is the fundamental difference between a chatbot and an agent.
+Your agent can now take actions  - it's not just a voice chatbot, it's an agent that can do things. This is the fundamental difference between a chatbot and an agent.
 
-Notice how tool calling works seamlessly in the cascaded pipeline — the LLM processes text, so function calls are natural. In the next phase, you'll see what happens when we remove the text stage entirely.
+Notice how tool calling works seamlessly in the cascaded pipeline  - the LLM processes text, so function calls are natural. In the next phase, you'll see what happens when we remove the text stage entirely.
 
 When you're ready, move on to **[Phase 4: Realtime models](phase-4.md)**.
