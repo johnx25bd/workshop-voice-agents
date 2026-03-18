@@ -165,16 +165,21 @@ Start the agent in development mode:
 python agent.py dev
 ```
 
-Then open the frontend. LiveKit provides a starter app you can clone and run locally:
+Then open the [LiveKit Agents Playground](https://agents-playground.livekit.io) in Chrome. Connect it to your LiveKit Cloud project and click "Connect." You should be able to talk to your agent.
+
+<details>
+<summary>Go deeper: Build your own frontend</summary>
+
+The playground is convenient for development, but if you want a standalone frontend you can customize, clone the React starter:
 
 ```bash
-git clone https://github.com/livekit-examples/agent-starter-python.git
-cd agent-starter-python
+git clone https://github.com/livekit-examples/agent-starter-react.git
+cd agent-starter-react
 npm install
 npm run dev
 ```
 
-Open it in Chrome, connect to your LiveKit Cloud project, and talk to your agent.
+</details>
 
 You can also test without a browser using console mode:
 
