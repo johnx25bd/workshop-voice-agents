@@ -178,7 +178,7 @@ Now set up the frontend. In a separate terminal, clone and run LiveKit's React s
 ```bash
 git clone https://github.com/livekit-examples/agent-starter-react.git
 cd agent-starter-react
-pnpm install   # or npm install
+pnpm install
 ```
 
 Create a `.env` file in the React app with your LiveKit credentials and agent name:
@@ -195,7 +195,7 @@ The `AGENT_NAME` must match the name in your agent's `@server.rtc_session(agent_
 Start the frontend:
 
 ```bash
-pnpm dev   # or npm run dev
+pnpm dev
 ```
 
 Open it in Chrome and click "Start Call." You should be talking to your agent.
