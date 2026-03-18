@@ -15,14 +15,14 @@ Think about a real scenario: a customer calls a business. What do they usually a
 
 ### Scope and guardrails
 
-This matters. A voice agent that happily chats about anything isn't a product, it's a liability. Your system prompt should define clear boundaries:
+Your system prompt should define what the agent talks about and what it doesn't:
 
-- What topics the agent should handle
-- What topics it should redirect or refuse ("I can only help with gym-related questions. For anything else, please call the front desk.")
-- What it should never do (make promises, give medical/legal advice, share internal information)
-- How to handle edge cases (angry callers, off-topic requests, questions it can't answer)
+- Topics it handles
+- Topics it redirects ("I can only help with gym-related questions")
+- Things it should never do (make promises, give medical/legal advice, share internal data)
+- How to handle off-topic requests or angry callers
 
-Try asking your agent something completely outside its intended scope. Does it stay on track or does it wander? Tighten the instructions until it holds its boundaries.
+Once you've set this up, try to get the agent off-topic. Does it stay in scope?
 
 ### Loading context
 
